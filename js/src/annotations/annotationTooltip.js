@@ -392,6 +392,12 @@
 
     freezeQtip: function(api, oaAnno, viewerParams) {
       var _this = this;
+            var restricted = "";
+      if (typeof oaAnno.permissions !== "undefined") {
+        if (typeof oaAnno.permissions.read[0] !== "undefined") {
+          restricted = "checked";
+        }
+      }
       if (this.inEditOrCreateMode) { throw 'AnnotationTooltip already in edit mode'; }
       this.inEditOrCreateMode = true;
       _this.eventEmitter.publish('disableRectTool.' + this.windowId);
@@ -439,6 +445,7 @@
       '<div>',
       // need to add a delete, if permissions allow
       '<div class="button-container">',
+      '<div class="pull-left"><input type="checkbox" {{#if restricted}}{{restricted}}{{/if}} class="anno-privacy" name="privacy" value="private"> <span style="text-decoration: underline;">{{t " keep private"}}</span></input></div>',
       '<a href="#cancel" class="cancel"><i class="fa fa-times-circle-o fa-fw"></i>{{t "cancel"}}</a>',
       '<a href="#save" class="save"><i class="fa fa-database fa-fw"></i>{{t "save"}}</a>',
       '</div>',
