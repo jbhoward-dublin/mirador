@@ -19,9 +19,15 @@
     init: function() {
       var _this = this;
       var annoText = "",
+        restricted = "",
         selectedTags = [],
         tags = [];
       if (!jQuery.isEmptyObject(_this.annotation)) {
+        if (typeof _this.annotation.permissions !== "undefined") {
+          if (typeof _this.annotation.permissions.read[0] !== "undefined") {
+            restricted = "checked";
+          }
+        }
         if (jQuery.isArray(_this.annotation.resource)) {
           jQuery.each(_this.annotation.resource, function(index, value) {
             if (value['@type'] === "oa:Tag") {
@@ -83,8 +89,11 @@
 
       var motivation = [],
         resource = [],
+        restricted = false,
         on;
 
+      restricted = this.editorContainer.find('.anno-privacy').prop('checked');
+      
       if (tags && tags.length > 0) {
         motivation.push("oa:tagging");
         jQuery.each(tags, function(index, value) {
@@ -113,8 +122,13 @@
         resourceText = tinymce.activeEditor.getContent();
 
       var motivation = [],
+        privacy = false,
         resource = [];
 
+      // get "keep private" checkbox value
+      var restricted = this.editorContainer.find('.anno-privacy').prop('checked');
+      oaAnno.restricted = restricted;
+      
       //remove all tag-related content in annotation
       oaAnno.motivation = jQuery.grep(oaAnno.motivation, function(value) {
         return value !== "oa:tagging";
