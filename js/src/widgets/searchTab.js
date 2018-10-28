@@ -113,6 +113,16 @@
 
       this.element.find(".js-search-expand").on('click', function(event){
         event.preventDefault();
+        
+        if ( jQuery(this).children("i") ) { 
+          if ( jQuery(this).children("i").hasClass("fa-plus-circle") ) {
+            jQuery(this).children("i").removeClass("fa-plus-circle");
+            jQuery(this).children("i").addClass("fa-minus-circle");
+          } else if (jQuery(this).children("i").hasClass("fa-minus-circle") ) {
+            jQuery(this).children("i").removeClass("fa-minus-circle");
+            jQuery(this).children("i").addClass("fa-plus-circle");
+          }
+        } 
 
         _this.element.find(".js-search-expanded").slideToggle("fast");
 
