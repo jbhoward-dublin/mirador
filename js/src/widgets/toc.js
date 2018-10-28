@@ -375,7 +375,7 @@
     emptyTemplate: $.Handlebars.compile([
       '<ul class="toc">',
       '<li class="leaf-item open">',
-      '<h2><span>{{t "noIndex"}}</span></h2>',
+      '<h2><span>{{t "No index for this item"}}</span></h2>',
       '</ul>',
     ].join('')),
 
