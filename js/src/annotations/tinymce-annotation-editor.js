@@ -46,6 +46,13 @@
         }
       });
       tags = tags.concat(selectedTags);
+      
+      var optionSelected='commenting'; /* JH */
+      $.Handlebars.registerHelper('selectAnnotype', function(selected, options) {
+        return options.fn(this).replace(
+        new RegExp(' value=\"' + optionSelected + '\"'),
+        '$& selected="selected"');
+      });
 
       this.editorMarkup = this.editorTemplate({
         content: annoText,
@@ -88,12 +95,14 @@
         resourceText = tinymce.activeEditor.getContent();
 
       var motivation = [],
+        motivationSelected = "",
         resource = [],
-        restricted = false,
+        restricted = false,     /* JBH */
         on;
 
       restricted = this.editorContainer.find('.anno-privacy').prop('checked');
-      
+      motivationSelected = this.editorContainer.find('#select-annotype').find(":selected").prop('value');
+
       if (tags && tags.length > 0) {
         motivation.push("oa:tagging");
         jQuery.each(tags, function(index, value) {
@@ -103,7 +112,11 @@
           });
         });
       }
-      motivation.push("oa:commenting");
+      motivation.push("oa:"+motivationSelected);
+      if (motivationSelected == "transcribing" || motivationSelected == "translating") {
+        motivation.push("oa:supplementing");
+      }
+
       resource.push({
         "@type": "dctypes:Text",
         "format": "text/html",
@@ -113,26 +126,33 @@
         "@context": "http://iiif.io/api/presentation/2/context.json",
         "@type": "oa:Annotation",
         "motivation": motivation,
+        "restricted": restricted,
         "resource": resource
       };
     },
-
+    
     updateAnnotation: function(oaAnno) {
       var selectedTags = this.editorContainer.find('.tags-editor').val(),
         resourceText = tinymce.activeEditor.getContent();
 
       var motivation = [],
         privacy = false,
+        selectedMotivation = "",
         resource = [];
 
       // get "keep private" checkbox value
       var restricted = this.editorContainer.find('.anno-privacy').prop('checked');
       oaAnno.restricted = restricted;
-      
-      //remove all tag-related content in annotation
-      oaAnno.motivation = jQuery.grep(oaAnno.motivation, function(value) {
-        return value !== "oa:tagging";
-      });
+
+      oaAnno.motivation = [];
+      var motivationSelected = this.editorContainer.find('#select-annotype').find(":selected").prop('value');
+      if (typeof motivationSelected !== "undefined") {
+        oaAnno.motivation.push("oa:"+motivationSelected);
+      }
+      if (motivationSelected == "transcribing" || motivationSelected == "translating") {
+        oaAnno.motivation.push("oa:supplementing");
+      }
+
       oaAnno.resource = jQuery.grep(oaAnno.resource, function(value) {
         return value["@type"] !== "oa:Tag";
       });
@@ -160,6 +180,13 @@
       '{{/each}}</select>'
     ].join(''))
   };
+  
+  var optionSelected='commenting'; // default motivation
+  $.Handlebars.registerHelper('selectAnnotype', function(selected, options) {
+    return options.fn(this).replace(
+    new RegExp(' value=\"' + optionSelected + '\"'),
+    '$& selected="selected"');
+  });
 
   // Handlebars helper: Contains
   // check if a value is contained in an array
