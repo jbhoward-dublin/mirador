@@ -251,7 +251,7 @@ $.SearchWithinResults.prototype = {
       canvasid: id_parts.base,
       coordinates: id_parts.coords,
       canvaslabel: canvaslabel,
-      resulttext: annotation.resource.chars
+      resulttext: annotation.resource.chars.replace("\\\'","&apos;") // hack
     };
   },
 
