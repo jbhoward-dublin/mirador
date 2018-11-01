@@ -114,6 +114,7 @@
       this.element.find(".js-search-expand").on('click', function(event){
         event.preventDefault();
         
+        // toggle plus & minus font-awesome graphic for search options
         if ( jQuery(this).children("i") ) { 
           if ( jQuery(this).children("i").hasClass("fa-plus-circle") ) {
             jQuery(this).children("i").removeClass("fa-plus-circle");
