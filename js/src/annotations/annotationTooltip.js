@@ -392,7 +392,7 @@
 
     freezeQtip: function(api, oaAnno, viewerParams) {
       var _this = this;
-            var restricted = "";
+      var restricted = "";
       if (typeof oaAnno.permissions !== "undefined") {
         if (typeof oaAnno.permissions.read[0] !== "undefined") {
           restricted = "checked";
@@ -403,6 +403,17 @@
       _this.eventEmitter.publish('disableRectTool.' + this.windowId);
       var editorContainer = this.editorTemplate({
         id: jQuery.isEmptyObject(oaAnno) ? "" : oaAnno['@id'],
+        windowId: this.windowId
+      });
+      var optionSelected = motivation[0].substring(3);
+      $.Handlebars.registerHelper('selectAnnotype', function(selected, options) {
+        return options.fn(this).replace(
+        new RegExp(' value=\"' + optionSelected + '\"'),
+        '$& selected="selected"');
+      });
+      var editorContainer = this.editorTemplate({
+        id: jQuery.isEmptyObject(oaAnno) ? "" : oaAnno['@id'],
+        restricted: restricted,
         windowId: this.windowId
       });
       api.set({
@@ -443,11 +454,19 @@
     editorTemplate: $.Handlebars.compile([
       '<form id="annotation-editor-{{windowId}}" class="annotation-editor annotation-tooltip" {{#if id}}data-anno-id="{{id}}"{{/if}}>',
       '<div>',
-      // need to add a delete, if permissions allow
+      // need to add a delete, if permissions allow - JBH added restricted checkbox, annotype selection box 
       '<div class="button-container">',
       '<div class="pull-left"><input type="checkbox" {{#if restricted}}{{restricted}}{{/if}} class="anno-privacy" name="privacy" value="private"> <span style="text-decoration: underline;">{{t " keep private"}}</span></input></div>',
+      '<br />',
+      '<div class="select-annotype pull-left" style="margin-top: 6px;">',
+      '<select id="select-annotype" name="select-annotype">',
+      '{{#selectAnnotype CurrentSort}} <option value="commenting">commenting</option> <option value="classifying">classifying</option> <option value="describing">describing</option> <option value="identifying">identifying</option> <option value="transcribing">transcribing</option> <option value="translating">translating</option></select> {{/selectAnnotype}}',
+      '</div>',
+      '<br />',
+      '<div class="anno-save-cancel pull-right" style="margin-bottom: .5em;">',
       '<a href="#cancel" class="cancel"><i class="fa fa-times-circle-o fa-fw"></i>{{t "cancel"}}</a>',
       '<a href="#save" class="save"><i class="fa fa-database fa-fw"></i>{{t "save"}}</a>',
+      '</div>',
       '</div>',
       '</div>',
       '</form>'
