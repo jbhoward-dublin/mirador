@@ -74,6 +74,8 @@
     displaySearchWithin: function(query_params, searchUrl){
       var _this = this;
       if (query_params !== "") {
+        
+        var localSearchEndpoint = this.state.getStateProperty('windowSettings').searchEndpoint;
 
         this.searchObject = new $.SearchWithinResults({
           manifest: _this.manifest,
@@ -85,6 +87,7 @@
           thumbInfo: {thumbsHeight: 80, listingCssCls: 'panel-listing-thumbs', thumbnailCls: 'panel-thumbnail-view'},
           query_params: query_params,
           searchService: searchUrl,
+          localSearchService: localSearchEndpoint,
           eventEmitter: _this.eventEmitter
         });
       }
@@ -139,8 +142,24 @@
 
     render: function(state) {
       var _this = this;
+      
+      /* if searchEndpoint declared in windowSettings && is not in the current object, add it to the manifest JBH */
 
       var searchService = this.manifest.getSearchWithinService(),
+        localSearchEndpoint = this.state.getStateProperty('windowSettings').searchEndpoint;
+      
+      /* make the local search service always be a choice for search within */
+      if (searchService == null && localSearchEndpoint !== "undefined") {
+        this.manifest.jsonLd.service = [];
+        this.manifest.jsonLd.service.push(localSearchEndpoint);
+      } else if (searchService !== null && localSearchEndpoint !== "undefined") {
+        var matchingProfile = searchService.filter(function (service) { return service.profile === localSearchEndpoint.profile; });
+        if (typeof matchingProfile[0].profile == "undefined") {
+          searchService.push(localSearchEndpoint);
+        }
+      }
+
+      searchService = this.manifest.getSearchWithinService(),
           searchServiceIdArray = searchService && searchService.map(function(data){
         return {
           "url": data['@id'],
