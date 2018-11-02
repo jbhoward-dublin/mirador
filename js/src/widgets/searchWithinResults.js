@@ -20,6 +20,7 @@ $.SearchWithinResults = function(options) {
     /** Search service URL */
     searchService:     null,
     windowId:             null,
+    localSearchService:   null,   // enable access to searchService declared in Mirador initialisation
     /** {q: query, motivation: motivation, date: date, user: user} */
     query_params:         null,
     /** Used for paging. This assumes that searches start on page 1... */
@@ -51,6 +52,10 @@ $.SearchWithinResults.prototype = {
       else if (query_params[param].length > 0){
        query_string += "&" + param + "=" + query_params[param];
       }
+    }
+    
+    if (this.searchService == this.localSearchService["@id"]) { // JBH - this indicates that this.searchService has not been appended with an identifier
+      query_string += '&manifestID=' + encodeURIComponent(this.manifest.jsonLd["@id"]);
     }
 
     var url = this.searchService + '?' + query_string;
