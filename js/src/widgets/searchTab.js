@@ -148,15 +148,15 @@
       var searchService = this.manifest.getSearchWithinService(),
         localSearchEndpoint = this.state.getStateProperty('windowSettings').searchEndpoint;
       
-      /* make the local search service always be a choice for search within */
+      /* the local search service should always be a choice for search within */
       if (searchService == null && localSearchEndpoint !== "undefined") {
         this.manifest.jsonLd.service = [];
         this.manifest.jsonLd.service.push(localSearchEndpoint);
-      } else if (searchService !== null && localSearchEndpoint !== "undefined") {
-        var matchingProfile = searchService.filter(function (service) { return service.profile === localSearchEndpoint.profile; });
-        if (typeof matchingProfile[0].profile == "undefined") {
+      } 
+      else if (searchService !== null && localSearchEndpoint !== "undefined") {
+        if (searchService[0]["@id"].indexOf(localSearchEndpoint["@id"]) == -1) {
           searchService.push(localSearchEndpoint);
-        }
+        } 
       }
 
       searchService = this.manifest.getSearchWithinService(),
