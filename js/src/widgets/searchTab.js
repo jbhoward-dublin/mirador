@@ -152,6 +152,8 @@
       if (searchService == null && localSearchEndpoint !== "undefined") {
         this.manifest.jsonLd.service = [];
         this.manifest.jsonLd.service.push(localSearchEndpoint);
+        searchService = [];
+        searchService.push(localSearchEndpoint);
       } 
       else if (searchService !== null && localSearchEndpoint !== "undefined") {
         if (searchService[0]["@id"].indexOf(localSearchEndpoint["@id"]) == -1) {
@@ -159,7 +161,7 @@
         } 
       }
 
-      searchService = this.manifest.getSearchWithinService(),
+      //searchService = this.manifest.getSearchWithinService(),
           searchServiceIdArray = searchService && searchService.map(function(data){
         return {
           "url": data['@id'],
